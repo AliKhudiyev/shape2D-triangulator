@@ -1,4 +1,4 @@
-#include "triangluater.hpp"
+#include "triangluator.hpp"
 
 #include <iostream>
 #include <unistd.h>

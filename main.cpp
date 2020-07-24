@@ -1,4 +1,4 @@
-#include "triangluater.hpp"
+#include "triangluator.hpp"
 
 #include <iostream>
 
@@ -19,6 +19,17 @@ int main(){
         {1.0, 0.5},
         {0.0, 1.0},
         {0.5, 0.5}
+    };
+
+    vector<vertex_t> vertices2{
+        {0.0, 0.0},
+        {0.5, 0.5},
+        {0.0, 1.0},
+        {1.0, 0.5},
+        {0.75, 0.0},
+        {1.0, -0.5},
+        {0.0, -1.0},
+        {0.5, -0.5}
     };
 
     vector<triangle_t> triangles;
@@ -54,7 +65,7 @@ int main(){
     //cout<<tell_shape(vertices)<<'\n';
     //cout<<tell_shape(vertices1)<<'\n';
 
-    triangulate(vertices1, triangles, indices);
+    triangulate(vertices2, triangles, indices);
 
     // for(const auto& triangle: triangles){
     //     cout<<triangle.v[0].data[0]<<", "<<triangle.v[0].data[1]<<"\n";
