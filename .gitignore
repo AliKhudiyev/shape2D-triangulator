@@ -1,5 +1,6 @@
 # Directories
 .vscode/
 build/
+.DS_Store
 
 # Files

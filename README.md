@@ -11,9 +11,9 @@ Algorithm to confirm if given points(*point1* and *point2*) are **Pairable Point
 ```
 1. Draw a line between point1 and point2
 2. Add every side of the shape, which excludes point1 and point2, to a set
-2. If the line intersects with any line inside the set then [return False]
-3. If the line is outside of the shape then [return False]
-4. [Return True]
+3. If the line intersects with any line inside the set then [return False]
+4. If the line is outside the shape then [return False]
+5. [Return True]
 ```
 
 Algorithm to triangulate given 2D shape:

@@ -11,14 +11,18 @@ set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(SRCS 
     main.cpp
     ${SRC_DIR}/triangulator.cpp
+)
+set(SRCS_TEST 
+    testmain.cpp
+    ${SRC_DIR}/triangulator.cpp
     ${SRC_DIR}/tests.cpp
 )
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
-# FIND_PACKAGE(CPPUNIT REQUIRED)
 find_package(CppUnit REQUIRED)
 include_directories(${CPPUNIT_INCLUDE_DIR})
 LIST(APPEND UnitTestLibs ${CPPUNIT_LIBRARY})
 
 add_executable(main ${SRCS})
-target_link_libraries(main ${CPPUNIT_LIBRARY})
+add_executable(testmain testmain.cpp ${SRCS_TEST})
+target_link_libraries(testmain ${CPPUNIT_LIBRARY})
