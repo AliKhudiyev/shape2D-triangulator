@@ -3,21 +3,38 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <random>
+#include <iomanip>
+#include <map>
 
-#define epsilon 1e-5
+#define epsilon 1e-3
 
 struct Vertex{
     float data[3];
     bool operator==(const Vertex& v) const;
+    Vertex operator+(const Vertex& v) const;
+    Vertex operator-(const Vertex& v) const;
+    Vertex& operator+=(const Vertex& v);
+    Vertex& operator-=(const Vertex& v);
+    Vertex operator*(float k) const;
+    Vertex& operator*=(float k);
+
+    friend std::ostream& operator<<(std::ostream& out, const Vertex& v);
+    void print() const;
 };
+std::ostream& operator<<(std::ostream& out, const Vertex& v);
 
 struct Line{
     Vertex v[2];
+    friend std::ostream& operator<<(std::ostream& out, const Line& l);
 };
+std::ostream& operator<<(std::ostream& out, const Line& l);
 
 struct Triangle{
     Vertex v[3];
+    friend std::ostream& operator<<(std::ostream& out, const Triangle& tri);
 };
+std::ostream& operator<<(std::ostream& out, const Triangle& tri);
 
 using vertex_t = Vertex;
 using coef_t = Vertex;
@@ -47,9 +64,6 @@ enum Side{
     * If every point of a line is SECOND
     */
     SECOND,
-
-    FIRST_MIDDLE,
-    SECOND_MIDDLE,
     BOTH
 };
 
@@ -70,6 +84,8 @@ enum FunctionType{
 #define FUNC_REGULAR    FunctionType::VALID
 #define FUNC_VERTICAL   FunctionType::NONVALID
 
+// Basic math utility (for mathematical functions)
+
 bool is_equal(float a, float b);
 bool is_lessthan(float a, float b);
 bool is_greaterthan(float a, float b);
@@ -79,7 +95,10 @@ float calc(float x, const coef_t& coefs);
 float tell_y(float x, const coef_t& coefs);
 float tell_x(float y, const coef_t& coefs);
 
-Side is_inside(const vertex_t& v, const triangle_t& triangle);
+// ================================================
+// Triangulator
+
+bool is_inside(const vertex_t& v, const triangle_t& triangle);
 Side tell_side(const vertex_t& v, const line_t& line);
 Side tell_side(const line_t& l, const line_t& line);
 Side tell_binary_side(const vertex_t& v, const line_t& line);
@@ -89,5 +108,41 @@ ShapeType tell_shape(const line_t& line, const std::vector<vertex_t>& vertices);
 vertex_t tell_intersection(const coef_t& coefs1, const coef_t& coefs2);
 bool intersects(const line_t& l1, const line_t& l2);
 
+static std::vector<unsigned> __indices;
+
 bool is_separable(unsigned index1, unsigned index2, const std::vector<vertex_t>& vertices);
 void triangulate(const std::vector<vertex_t>& vertices, std::vector<triangle_t>& triangles, std::vector<unsigned>& indices, std::vector<unsigned> _indices = std::vector<unsigned>());
+void triangulate(const std::vector<vertex_t>& vertices, std::vector<unsigned>& indices);
+
+// ================================================
+// Random shape generation
+
+using uvec = std::vector<unsigned>;
+using ivec = std::vector<int>;
+
+struct shape_policy{
+    static float min_x_dist, max_x_dist;
+    static float min_y_dist, max_y_dist;
+};
+
+struct concav_expn{
+    triangle_t tris[2];
+    uvec indices[2], line_indices[2];
+
+    vertex_t vertex;
+    unsigned line_index;
+};
+
+void set_shape_policy(float min_x, float min_y, float max_x, float max_y);
+float generate_number(float a = 0.0f, float b = 1.0f);
+vertex_t generate_point(float xmin = 0.0f, float ymin = 0.0f, float xmax = 1.0f, float ymax = 1.0f);
+vertex_t generate_point(const std::vector<vertex_t>& vertices);
+std::vector<vertex_t> generate_convex(unsigned nvertices);
+std::vector<vertex_t> generate_concave(unsigned nvertices);
+std::vector<vertex_t> generate_concave_holes(unsigned nvertices);
+std::vector<vertex_t> generate_shape(unsigned nvertices);
+std::vector<vertex_t> convex_polygon(unsigned nvertices);
+unsigned get_line_index(unsigned i1, unsigned i2);
+concav_expn _make_concave(const triangle_t& triangle, const uvec& indices, const uvec& line_indices, unsigned desired_index);
+std::pair<vertex_t, unsigned> make_concave(const triangle_t& triangle, const std::vector<int>& line_indices);
+std::vector<vertex_t> concave_polygon(unsigned nvertices, unsigned nbasevertices);

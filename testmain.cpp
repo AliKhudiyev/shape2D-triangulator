@@ -9,6 +9,7 @@ using namespace CppUnit;
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTriangulator );
 
 int main(){
+    srand(time(0));
 
     // informs test-listener about testresults
     CPPUNIT_NS::TestResult testresult;

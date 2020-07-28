@@ -67,3 +67,9 @@ The csv file has to be formatted as shown below:
 ```
 
 *Note:* If any vertex is ill-formed(i.e. vertex containing a character) or the number of vertices is less than 3 the program returns nothing.
+
+# shape2D-generator
+
+This part of the program is to generate 2D shapes for the triangulator. There are several options to generate 2D shapes such as *convex*, *concave*, *concave_holes*.
+
+*Note:* To see the algorithm click here!
