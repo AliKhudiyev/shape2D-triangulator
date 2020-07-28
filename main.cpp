@@ -4,35 +4,114 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <unistd.h>
+
+#define CONVEX_POLY     0
+#define CONCAVE_POLY    1
 
 using namespace std;
 
 void import(istream& in, vector<Vertex>& vertices, const char delim = ',');
 
-int main(int argc, const char** argv){
+// 
+int main(int argc, char* const* argv){
     srand(time(0));
+    const string usage = 
+        "./main -[g] [cx/cv] [nvertices]\n"
+        "Check README for more detailed information!\n"
+    ;
 
     vector<vertex_t> vertices;
-    /*
-    if(argc == 1){
-        import(cin, vertices, ' ');
-    } else if(argc == 2){
-        string file_prefix = "../examples/";
-        string file_name(argv[1]);
-        string filepath = file_prefix + file_name;
-        ifstream file(filepath);
-        
-        if(!file){
-            cerr<<"ERROR[import]: File cannot be imported!\n";
-            assert(false);
-        }
-        import(file, vertices);
-        file.close();
-    }
-    */
-
     vector<triangle_t> triangles;
     vector<unsigned> indices;
+
+    bool tflag = true;
+    bool nflag = false;
+    bool pflag = false;
+    string filepath, opt2;
+    int shapetype;
+    unsigned nvertices = 0;
+
+    opterr = 0;
+    int c;
+
+    while ((c = getopt (argc, argv, "g:n:p:")) != -1)
+        switch (c)
+        {
+        case 'g':
+            tflag = false;
+            opt2 = string(optarg);
+            if(opt2=="cx") shapetype = CONVEX_POLY;
+            else if(opt2=="cv") shapetype = CONCAVE_POLY;
+            else{
+                cerr<<"No such option "<<opt2<<"!\n";
+                abort();
+            }
+            // cout<<"g flag: "<<opt2<<"\n";
+            break;
+        case 'n':
+            nflag = true;
+            nvertices = (unsigned)strtol(optarg, nullptr, 10);
+            // cout<<"n flag: "<<nvertices<<"\n";
+            break;
+        case 'p':
+            pflag = true;
+            filepath = string(optarg);
+            // cout<<"p flag: "<<filepath<<"\n";
+            break;
+        case '?':
+            if (optopt == 'c')
+            fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+            else if (isprint (optopt))
+            fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+            else
+            fprintf (stderr,
+                    "Unknown option character `\\x%x'.\n",
+                    optopt);
+            return 1;
+        default:
+            abort ();
+        }
+
+    if(tflag){
+        if(pflag){
+            const string prefix = "../examples/";
+            std::cout<<"Importing with the prefix: "<<prefix;
+            ifstream file(prefix+filepath);
+            if(!file){
+                std::cerr<<"ERROR[import]: file cannot be opened!\n";
+                assert(false);
+            }
+            import(file, vertices);
+            file.close();
+        } else{
+            import(cin, vertices, ' ');
+        }
+        triangulate(vertices, triangles, indices);
+    } else{
+        if(nflag){
+            if(shapetype==CONVEX_POLY){
+                vertices = convex_polygon(nvertices);
+            } else if(shapetype==CONCAVE_POLY){
+                vertices = generate_concave(nvertices);
+            }
+        } else{
+            cerr<<"Need to provide number of vertices!\n";
+            abort();
+        }
+    }
+
+    for(const auto& v: vertices){
+        v.print();
+        cout<<'\n';
+    }
+    if(tflag){
+        cout<<"\nIndices: ";
+        for(const auto& index: indices){
+            cout<<' '<<index;
+        }
+        cout<<endl;
+    }
 
     //triangulate(vertices, triangles, indices);
 
@@ -41,18 +120,6 @@ int main(int argc, const char** argv){
     //     cout<<triangle.v[1].data[0]<<", "<<triangle.v[1].data[1]<<"\n";
     //     cout<<triangle.v[2].data[0]<<", "<<triangle.v[2].data[1]<<"\n\n";
     // }
-
-    for(const auto& index: indices){
-        cout<<' '<<index;
-    }   cout<<endl;
-
-    if(argc == 1){
-        std::cerr<<"Are you dumb, STOOPID or dumb?!\n";
-        // assert(false);
-    }
-    // vertices = generate_convex(strtol(argv[1], nullptr, 10));
-    vertices = concave_polygon(strtol(argv[1], nullptr, 10), 3);
-    // vertices = convex_polygon(strtol(argv[1], nullptr, 10));
 
     // vertices.clear(); // concave rectangle example
     // vertices.push_back({0.664083, 0.242819});
@@ -69,39 +136,10 @@ int main(int argc, const char** argv){
     // vertices.push_back({0.874295, 0.187868});
     // vertices.push_back({0.872147, 0.194566});
 
-    // vertices.push_back({1.22800124, 3.01726794});
-    // vertices.push_back({3.22383475, 2.98937345});
-    // vertices.push_back({5.03408527, 3.87499189});
-    // vertices.push_back({5.03785324, 5.03693295});
-    // vertices.push_back({3.13797617, 5.58400536});
-    // solved
-
-    // cout<<"epsilon: "<<epsilon<<"\n\n";
-    
-    for(const auto& v: vertices){
-        v.print();
-        cout<<'\n';
-    }
-
     string type;
     type = tell_shape(vertices) == ShapeType::CONVEX? "convex" : "concave";
     
-    // cout<<tell_shape(vertices);
     cout<<"Type: "<<type<<'\n';
-
-    // Triangle triangle;
-    // triangle.v[0] = {0.0f, 0.0f};
-    // triangle.v[1] = {1.0f, 0.0f};
-    // triangle.v[2] = {0.5f, 1.0f};
-
-    // vertices.clear();
-    // vertices.push_back(triangle.v[0]);
-    // vertices.push_back(triangle.v[1]);
-    // vertices.push_back(triangle.v[2]);
-
-    // auto point = generate_point(vertices);
-    // cout<<is_inside(point, triangle)<<'\n';;
-    // cout<<tell_shape(vertices)<<'\n';
 
     return 0;
 }
