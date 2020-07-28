@@ -675,7 +675,7 @@ concav_expn _make_concave(const triangle_t& triangle, const uvec& indices, const
 
     // std::cout<<" dbg: generated vertex is "<<vertex<<"\n";
 
-    unsigned index = line_indices[0]; // Randomize!
+    unsigned index = line_indices[(unsigned)generate_number(0.0f, (float)line_indices.size())]; // Randomize!
     unsigned beg = indices[0], mid = indices[1], end = indices[2];
     unsigned neig = indices[(index+2)%3];
 
@@ -796,9 +796,10 @@ std::vector<vertex_t> concave_polygon(unsigned nvertices, unsigned nbasevertices
     for(unsigned i=0;i<n;++i){
         std::cout<<"Adding a vertex...\n";
 
-        triangle_t tri = triangles[0];
-        uvec inds = indices[0];
-        uvec linds = line_indices[0];
+        unsigned ind = (unsigned)generate_number(0.0f, (float)triangles.size());
+        triangle_t tri = triangles[ind];
+        uvec inds = indices[ind];
+        uvec linds = line_indices[ind];
 
         std::cout<<"All triangles:\n";
         for(const auto& tri: triangles){
@@ -826,17 +827,17 @@ std::vector<vertex_t> concave_polygon(unsigned nvertices, unsigned nbasevertices
         verts.insert(verts.cbegin()+place, vertex);
         vertices.push_back(vertex);
 
-        triangles.erase(triangles.begin());
-        triangles.insert(triangles.begin(), expn.tris[0]);
-        triangles.insert(triangles.begin()+1, expn.tris[1]);
+        triangles.erase(triangles.begin()+ind);
+        triangles.insert(triangles.begin()+ind, expn.tris[0]);
+        triangles.insert(triangles.begin()+ind+1, expn.tris[1]);
 
-        indices.erase(indices.begin());
-        indices.insert(indices.begin(), expn.indices[0]);
-        indices.insert(indices.begin()+1, expn.indices[1]);
+        indices.erase(indices.begin())+ind;
+        indices.insert(indices.begin()+ind, expn.indices[0]);
+        indices.insert(indices.begin()+ind+1, expn.indices[1]);
 
-        line_indices.erase(line_indices.begin());
-        line_indices.insert(line_indices.begin(), expn.line_indices[0]);
-        line_indices.insert(line_indices.begin()+1, expn.line_indices[1]);
+        line_indices.erase(line_indices.begin()+ind);
+        line_indices.insert(line_indices.begin()+ind, expn.line_indices[0]);
+        line_indices.insert(line_indices.begin()+ind+1, expn.line_indices[1]);
 
         std::cout<<" > Added vertex data: "<<vertex<<" @ index "<<place<<"\n";
         for(const auto& v: vertices){
