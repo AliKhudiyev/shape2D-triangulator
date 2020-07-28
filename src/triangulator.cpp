@@ -713,9 +713,9 @@ concav_expn _make_concave(const triangle_t& triangle, const uvec& indices, const
     }
 
     expn.tris[0] = {
-        points[neig],
+        points[std::find(indices.cbegin(), indices.cend(), neig)-indices.cbegin()],
         vertex,
-        points[i1]
+        points[std::find(indices.cbegin(), indices.cend(), i1)-indices.cbegin()]
     };
 
     // -----------------------
@@ -735,9 +735,9 @@ concav_expn _make_concave(const triangle_t& triangle, const uvec& indices, const
     }
 
     expn.tris[1] = {
-        points[neig],
+        points[std::find(indices.cbegin(), indices.cend(), neig)-indices.cbegin()],
         vertex,
-        points[i2]
+        points[std::find(indices.cbegin(), indices.cend(), i2)-indices.cbegin()]
     };
 
     std::cout<<" dbg: Done!\n";
