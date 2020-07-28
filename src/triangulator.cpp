@@ -500,7 +500,7 @@ vertex_t generate_point(const std::vector<vertex_t>& vertices){
     float k = generate_number();
     float coef = generate_number();
     unsigned count = vertices.size();
-    coef = k = 0.5f;
+    coef = 0.5f;
 
     if(count == 3){
         for(unsigned i=0;i<count;++i){
@@ -602,11 +602,14 @@ std::vector<vertex_t> generate_convex(unsigned nvertices){
 }
 
 std::vector<vertex_t> generate_concave(unsigned nvertices){
-    std::vector<vertex_t> vertices(nvertices);
+    if(nvertices<4){
+        std::cerr<<"ERROR[generator]: required 4+ vertices for concave polygon!\n";
+        assert(false);
+    }
 
-    ;
+    unsigned nbasevertices = (unsigned)generate_number(3.0f, (float)nvertices);
 
-    return vertices;
+    return concave_polygon(nvertices, nbasevertices);
 }
 
 std::vector<vertex_t> generate_concave_holes(unsigned nvertices){
@@ -636,9 +639,14 @@ std::vector<vertex_t> generate_shape(unsigned nvertices){
     return generate_concave_holes(nvertices);
 }
 
-std::vector<vertex_t> convex_polygon(unsigned nvertices){
+std::vector<vertex_t> convex_polygon(unsigned nvertices, float radius){
+    if(nvertices<3){
+        std::cerr<<"ERROR[generator]: required 3+ vertices for convex polygon!\n";
+        assert(false);
+    }
+
     std::vector<vertex_t> vertices(nvertices);
-    float r = (float)nvertices / 10.0f;
+    float r = radius < 0.0f? (float)nvertices / 10.0f : radius;
     float angle = 360.0f / (float)nvertices;
     float curr = 0.0, rad;
 
@@ -667,7 +675,7 @@ unsigned get_line_index(unsigned i1, unsigned i2){
     return index;
 }
 
-concav_expn _make_concave(const triangle_t& triangle, const uvec& indices, const uvec& line_indices, unsigned desired_index){
+concav_expn make_concave(const triangle_t& triangle, const uvec& indices, const uvec& line_indices, unsigned desired_index){
     concav_expn expn;
 
     vertex_t points[3] = {triangle.v[0], triangle.v[1], triangle.v[2]};
@@ -707,7 +715,7 @@ concav_expn _make_concave(const triangle_t& triangle, const uvec& indices, const
     int neig_index = std::find(indices.cbegin(), indices.cend(), neig) - indices.cbegin();
     int i1_index = std::find(indices.cbegin(), indices.cend(), i1) - indices.cbegin();
     unsigned small_index = neig_index < i1_index ? neig_index : i1_index;
-    unsigned place = small_index + abs(neig_index-i1_index) - 1;
+    unsigned place = abs(neig_index-i1_index) != 2? small_index : 2;
     if(std::find(line_indices.cbegin(), line_indices.cend(), place) != line_indices.cend()){
         expn.line_indices[0].push_back(2);
     }
@@ -729,7 +737,7 @@ concav_expn _make_concave(const triangle_t& triangle, const uvec& indices, const
     // neig_index = std::find(indices.cbegin(), indices.cend(), neig) - indices.cbegin();
     int i2_index = std::find(indices.cbegin(), indices.cend(), i2) - indices.cbegin();
     small_index = neig_index < i2_index ? neig_index : i2_index;
-    place = small_index + abs(neig_index-i2_index) - 1;
+    place = abs(neig_index-i2_index) != 2? small_index : 2;
     if(std::find(line_indices.cbegin(), line_indices.cend(), place) != line_indices.cend()){
         expn.line_indices[1].push_back(2);
     }
@@ -744,45 +752,38 @@ concav_expn _make_concave(const triangle_t& triangle, const uvec& indices, const
     return expn;
 }
 
-std::pair<vertex_t, unsigned> make_concave(const triangle_t& triangle, const std::vector<int>& line_indices){
-    std::pair<vertex_t, unsigned> pair;
-
-    vertex_t vertex = generate_point({triangle.v[0], triangle.v[1], triangle.v[2]});
-    unsigned index = 0; // TO DO
-
-    pair.first = vertex;
-    pair.second = index;
-
-    return pair;
-}
-
 std::vector<vertex_t> concave_polygon(unsigned nvertices, unsigned nbasevertices){
-    std::vector<vertex_t> vertices;
+    std::vector<vertex_t> vertices; // to keep track of all vertices without order
     std::vector<uvec> indices;  // to keep track of indices of all triangles
     std::vector<uvec> line_indices; // to keep track of actual line segments
     std::vector<triangle_t> triangles; // to keep track of all triangles
     std::vector<vertex_t> verts;
 
-    vertices.push_back({0.0f, 0.0f});
-    vertices.push_back({1.0f, 0.0f});
-    vertices.push_back({0.5f, 1.0f});
+    vertices = convex_polygon(nbasevertices, (float)(nbasevertices-2));
+    for(unsigned i=0;i<nbasevertices-2;++i){
+        uvec inds;
+        inds.push_back(0);
+        inds.push_back(i+1);
+        inds.push_back(i+2);
+        indices.push_back(inds);
+
+        uvec linds;
+        if(i==0){
+            linds.push_back(0);
+            linds.push_back(1);
+        } else if(i==nbasevertices-3){
+            linds.push_back(1);
+            linds.push_back(2);
+        } else{
+            linds.push_back(1);
+        }
+        line_indices.push_back(linds);
+
+        triangle_t tri = {vertices[0], vertices[i+1], vertices[i+2]};
+        triangles.push_back(tri);
+    }
 
     verts = vertices;
-
-    uvec inds;
-    inds.push_back(0);
-    inds.push_back(1);
-    inds.push_back(2);
-    indices.push_back(inds);
-
-    uvec linds;
-    linds.push_back(0);
-    linds.push_back(1);
-    linds.push_back(2);
-    line_indices.push_back(linds);
-
-    triangle_t tri = {vertices[0], vertices[1], vertices[2]};
-    triangles.push_back(tri);
 
     if(nvertices <= nbasevertices){
         std::cout<<"Base shape is not accepted!\n";
@@ -814,7 +815,7 @@ std::vector<vertex_t> concave_polygon(unsigned nvertices, unsigned nbasevertices
         }
         std::cout<<'\n';
 
-        auto expn = _make_concave(tri, inds, linds, 3+i);
+        auto expn = make_concave(tri, inds, linds, 3+i);
 
         std::cout<<" | obtained expn\n";
         std::cout<<" | obtained line index: "<<expn.line_index<<'\n';
@@ -824,6 +825,7 @@ std::vector<vertex_t> concave_polygon(unsigned nvertices, unsigned nbasevertices
         auto place1 = std::find(verts.begin(), verts.end(), tri.v[expn.line_index])-verts.cbegin();
         auto place2 = std::find(verts.begin(), verts.end(), tri.v[(expn.line_index+1)%3])-verts.cbegin();
         auto place = place1 > place2 ? place1 : place2;
+        if(abs(place1-place2)==2) place = 3;
         verts.insert(verts.cbegin()+place, vertex);
         vertices.push_back(vertex);
 

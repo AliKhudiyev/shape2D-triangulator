@@ -73,3 +73,36 @@ The csv file has to be formatted as shown below:
 This part of the program is to generate 2D shapes for the triangulator. There are several options to generate 2D shapes such as *convex*, *concave*, *concave_holes*.
 
 *Note:* To see the algorithm click here!
+
+# How to run the program
+
+```bash
+./main [-opt1] [opt2] [nvertices]
+```
+
+*opt1* can be one of these:
+
+- none (to triangulate)
+- **g** (to generate)
+
+If *opt1* is empty then the next option(*opt2*) may be one of the following:
+
+- empty (to provide vertices manually)
+- **path/to/csv** (to provide vertices from a csv file)
+
+If *opt1* is **g** then the next option(*opt2*) may be one of the following:
+
+- **cx** (to generate a convex polygon)
+- **cv** (to generate a concave polygon)
+
+And *nvertices* has to be set if *opt1* is **g**.
+
+## Examples
+
+```bash
+./main
+./main file.csv
+./ main -g cx 5
+./main -g cv 5
+```
+
