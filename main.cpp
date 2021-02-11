@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <unistd.h>
+#include <cassert>
 
 #define CONVEX_POLY     0
 #define CONCAVE_POLY    1
@@ -75,9 +76,9 @@ int main(int argc, char* const* argv){
 
     if(tflag){
         if(pflag){
-            const string prefix = "../examples/";
-            std::cout<<"Importing with the prefix: "<<prefix;
-            ifstream file(prefix+filepath);
+            // const string prefix = "../examples/";
+            // std::cout<<"Importing with the prefix: "<<prefix;
+            ifstream file(filepath);
             if(!file){
                 std::cerr<<"ERROR[import]: file cannot be opened!\n";
                 assert(false);

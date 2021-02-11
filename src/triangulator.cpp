@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <unistd.h>
+#include <cassert>
 
 bool Vertex::operator==(const Vertex& v) const{
     if(abs(data[0] - v.data[0]) < epsilon && 
@@ -374,7 +375,7 @@ void triangulate(const std::vector<vertex_t>& vertices, std::vector<triangle_t>&
         for(unsigned j=0;j<=count;++j){
             //std::cout<<" sub iteration #"<<j<<'\n';
             if(is_separable(i, j%count, vertices)){
-                std::cout<<"> Joining indices "<<_indices[i]<<" and "<<_indices[(j)%count]<<'\n';
+                // std::cout<<"> Joining indices "<<_indices[i]<<" and "<<_indices[(j)%count]<<'\n';
                 std::vector<vertex_t> verts1, verts2;
                 std::vector<unsigned> _inds1, _inds2;
 
@@ -428,7 +429,7 @@ void triangulate(const std::vector<vertex_t>& vertices, std::vector<unsigned>& i
         for(unsigned j=0;j<=count;++j){
             //std::cout<<" sub iteration #"<<j<<'\n';
             if(is_separable(i, j%count, vertices)){
-                std::cout<<"> Joining indices "<<__indices[i]<<" and "<<__indices[(j)%count]<<'\n';
+                // std::cout<<"> Joining indices "<<__indices[i]<<" and "<<__indices[(j)%count]<<'\n';
                 std::vector<vertex_t> verts1, verts2;
                 std::vector<unsigned> _inds1, _inds2;
 
@@ -554,18 +555,18 @@ std::vector<vertex_t> generate_convex(unsigned nvertices){
 
     for(unsigned i=0;i<3;++i){
         vertices[i] = generate_point(0.0f, 0.0f, 4.0f, 4.0f);
-        std::cout<<"Iteration #"<<i<<'\n';
-        std::cout<<"Generating point...\n";
+        // std::cout<<"Iteration #"<<i<<'\n';
+        // std::cout<<"Generating point...\n";
         if(i==2){
             vertices[2] = generate_point(4.0f, 0.0f, 8.0f, 4.0f);
         }
-        std::cout<<vertices[i]<<"\n\n";
+        // std::cout<<vertices[i]<<"\n\n";
     }
     beg_point = vertices[0];
     origin1 = vertices[1];
     for(unsigned i=3;i<nvertices;++i){
         float k = generate_number(0.5f, 2.0f);
-        std::cout<<"Iteration #"<<i<<'\n';
+        // std::cout<<"Iteration #"<<i<<'\n';
         end_point = vertices[i-1];
         origin2 = vertices[i-2];
 
@@ -574,7 +575,7 @@ std::vector<vertex_t> generate_convex(unsigned nvertices){
         point1 = end_point + dir2 * (5.0f * k);
         point2 = beg_point + dir1 * k;
 
-        std::cout<<"Generating point...\n";
+        // std::cout<<"Generating point...\n";
         
         coef_t coefs1 = tell_coefs({beg_point, origin1});
         coef_t coefs2 = tell_coefs({end_point, origin2});
@@ -595,7 +596,7 @@ std::vector<vertex_t> generate_convex(unsigned nvertices){
 
             vertices[i] = generate_point(quad);
         }
-        std::cout<<vertices[i]<<"\n\n";
+        // std::cout<<vertices[i]<<"\n\n";
     }
 
     return vertices;
@@ -687,7 +688,7 @@ concav_expn make_concave(const triangle_t& triangle, const uvec& indices, const 
     unsigned beg = indices[0], mid = indices[1], end = indices[2];
     unsigned neig = indices[(index+2)%3];
 
-    std::cout<<" dbg: Adding post concav_expn section...\n";
+    // std::cout<<" dbg: Adding post concav_expn section...\n";
 
     expn.vertex = vertex;
     expn.line_index = index;
@@ -703,9 +704,9 @@ concav_expn make_concave(const triangle_t& triangle, const uvec& indices, const 
         i1 = beg; i2 = mid;
     }
 
-    std::cout<<" dbg: beg/mid/end, neig: "<<beg<<'/'<<mid<<'/'<<end<<", "<<neig<<'\n';
-    std::cout<<" dbg: i1/i2: "<<i1<<'/'<<i2<<'\n';
-    std::cout<<" dbg: Adding first concav_expn section...\n";
+    // std::cout<<" dbg: beg/mid/end, neig: "<<beg<<'/'<<mid<<'/'<<end<<", "<<neig<<'\n';
+    // std::cout<<" dbg: i1/i2: "<<i1<<'/'<<i2<<'\n';
+    // std::cout<<" dbg: Adding first concav_expn section...\n";
 
     expn.indices[0].push_back(neig);
     expn.indices[0].push_back(desired_index);
@@ -727,7 +728,7 @@ concav_expn make_concave(const triangle_t& triangle, const uvec& indices, const 
     };
 
     // -----------------------
-    std::cout<<" dbg: Adding second concav_expn section...\n";
+    // std::cout<<" dbg: Adding second concav_expn section...\n";
 
     expn.indices[1].push_back(neig);
     expn.indices[1].push_back(desired_index);
@@ -748,7 +749,7 @@ concav_expn make_concave(const triangle_t& triangle, const uvec& indices, const 
         points[std::find(indices.cbegin(), indices.cend(), i2)-indices.cbegin()]
     };
 
-    std::cout<<" dbg: Done!\n";
+    // std::cout<<" dbg: Done!\n";
     return expn;
 }
 
@@ -795,33 +796,33 @@ std::vector<vertex_t> concave_polygon(unsigned nvertices, unsigned nbasevertices
     unsigned index;
 
     for(unsigned i=0;i<n;++i){
-        std::cout<<"Adding a vertex...\n";
+        // std::cout<<"Adding a vertex...\n";
 
         unsigned ind = (unsigned)generate_number(0.0f, (float)triangles.size());
         triangle_t tri = triangles[ind];
         uvec inds = indices[ind];
         uvec linds = line_indices[ind];
 
-        std::cout<<"All triangles:\n";
-        for(const auto& tri: triangles){
-            std::cout<<tri<<'\n';
-        }
+        // std::cout<<"All triangles:\n";
+        // for(const auto& tri: triangles){
+        //     std::cout<<tri<<'\n';
+        // }
 
-        std::cout<<" | chosen triangle data: "<<tri<<'\n';
-        std::cout<<" | chosen indices data: "<<inds[0]<<"-"<<inds[1]<<"-"<<inds[2]<<'\n';
-        std::cout<<" | chosen line indices data: ";
-        for(const auto& lind: linds){
-            std::cout<<lind<<'-';
-        }
-        std::cout<<'\n';
+        // std::cout<<" | chosen triangle data: "<<tri<<'\n';
+        // std::cout<<" | chosen indices data: "<<inds[0]<<"-"<<inds[1]<<"-"<<inds[2]<<'\n';
+        // std::cout<<" | chosen line indices data: ";
+        // for(const auto& lind: linds){
+        //     std::cout<<lind<<'-';
+        // }
+        // std::cout<<'\n';
 
         auto expn = make_concave(tri, inds, linds, 3+i);
 
-        std::cout<<" | obtained expn\n";
-        std::cout<<" | obtained line index: "<<expn.line_index<<'\n';
+        // std::cout<<" | obtained expn\n";
+        // std::cout<<" | obtained line index: "<<expn.line_index<<'\n';
 
         vertex = expn.vertex;
-        std::cout<<" |> tri @ line index: "<<tri.v[expn.line_index]<<'\n';
+        // std::cout<<" |> tri @ line index: "<<tri.v[expn.line_index]<<'\n';
         auto place1 = std::find(verts.begin(), verts.end(), tri.v[expn.line_index])-verts.cbegin();
         auto place2 = std::find(verts.begin(), verts.end(), tri.v[(expn.line_index+1)%3])-verts.cbegin();
         auto place = place1 > place2 ? place1 : place2;
@@ -841,11 +842,11 @@ std::vector<vertex_t> concave_polygon(unsigned nvertices, unsigned nbasevertices
         line_indices.insert(line_indices.begin()+ind, expn.line_indices[0]);
         line_indices.insert(line_indices.begin()+ind+1, expn.line_indices[1]);
 
-        std::cout<<" > Added vertex data: "<<vertex<<" @ index "<<place<<"\n";
-        for(const auto& v: vertices){
-            std::cout<<v<<", ";
-        }
-        std::cout<<"\n\n";
+        // std::cout<<" > Added vertex data: "<<vertex<<" @ index "<<place<<"\n";
+        // for(const auto& v: vertices){
+        //     std::cout<<v<<", ";
+        // }
+        // std::cout<<"\n\n";
 
     }
 

@@ -45,8 +45,8 @@ To give all the vertices manually:
 
 ```bash
 ./main
-> [vertex1.x, vertex1.y]
-> [vertex2.x, vertex2.y]
+> vertex1.x, vertex1.y
+> vertex2.x, vertex2.y
 > ...
 > q # or ^C to begin the process
 ```
@@ -60,9 +60,9 @@ To import a csv file:
 The csv file has to be formatted as shown below:
 
 ```
-[vertex1.x, vertex1.y]
-[vertex2.x, vertex2.y]
-[vertex3.x, vertex3.y]
+vertex1.x, vertex1.y
+vertex2.x, vertex2.y
+vertex3.x, vertex3.y
 ...
 ```
 
