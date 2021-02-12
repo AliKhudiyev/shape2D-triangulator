@@ -1,14 +1,75 @@
-(520, 320)
-(452.107, 380.236)
-(468.477, 396.417)
-(420, 493.205)
-(407.049, 406.603)
-(371.885, 405.729)
-(220, 493.205)
-(346.577, 366.032)
-(427.712, 341.883)
-(220, 146.795)
-(420, 146.795)
+	
+= = = = = = = = START = = = = = = = = =
+Same sides[1]: (234, 408, 0)-(377, 541, 0), (234, 408, 0)-(295, 411, 0) | (234, 408, 0)-(342, 353, 0)
+Expandable from (234, 408, 0)
+ dbg returned normal intersection point :)
+current status: 1
+current status(2): 1
+	= = = = = = = = END = = = = = = = = =
+	
+= = = = = = = = START = = = = = = = = =
+current status: 1
+current status(2): 1
+	= = = = = = = = END = = = = = = = = =
+	
+= = = = = = = = START = = = = = = = = =
+current status: 1
+Same sides[2]: (501, 359, 0)-(484, 99, 0), (501, 359, 0)-(605, 181, 0) | (598, 389, 0)-(501, 359, 0)
+Expandable from (501, 359, 0)
+ dbg intersection with (484, 99, 0)-(256, 144, 0)
+ dbg returned normal intersection point :)
+ ...Hooray!
+current status(2): 1
+	= = = = = = = = END = = = = = = = = =
+	
+= = = = = = = = START = = = = = = = = =
+Same sides[1]: (501, 359, 0)-(484, 99, 0), (501, 359, 0)-(598, 389, 0) | (501, 359, 0)-(436, 209, 0)
+Expandable from (501, 359, 0)
+ dbg returned normal intersection point :)
+current status: 1
+Same sides[2]: (436, 209, 0)-(218, 269, 0), (436, 209, 0)-(256, 144, 0) | (501, 359, 0)-(436, 209, 0)
+Expandable from (436, 209, 0)
+ dbg intersection with (484, 99, 0)-(256, 144, 0)
+ dbg returned normal intersection point :)
+ ...Hooray!
+current status(2): 1
+	= = = = = = = = END = = = = = = = = =
+	
+= = = = = = = = START = = = = = = = = =
+current status: 1
+current status(2): 1
+	= = = = = = = = END = = = = = = = = =
+	
+= = = = = = = = START = = = = = = = = =
+current status: 1
+Same sides[2]: (342, 353, 0)-(234, 408, 0), (342, 353, 0)-(218, 269, 0) | (436, 209, 0)-(342, 353, 0)
+Expandable from (342, 353, 0)
+ dbg intersection with (234, 408, 0)-(598, 389, 0)
+ dbg returned normal intersection point :)
+ ...Hooray!
+current status(2): 1
+	= = = = = = = = END = = = = = = = = =
+	
+= = = = = = = = START = = = = = = = = =
+current status: 1
+current status(2): 1
+	= = = = = = = = END = = = = = = = = =
+	
+= = = = = = = = START = = = = = = = = =
+current status: 1
+current status(2): 1
+	= = = = = = = = END = = = = = = = = =
+(234, 408)
+(377, 541)
+(598, 389)
+(605, 181)
+(501, 359)
+(484, 99)
+(256, 144)
+(436, 209)
+(218, 269)
+(342, 353)
+(295, 411)
 
-Indices:  0 1 2 2 3 4 4 5 6 6 7 8 8 9 10 10 0 2 4 6 8 8 2 4 8 10 2
+Indices:  0 1 2 2 3 4 5 6 7 7 4 5 7 8 9 9 0 2 4 7 9 9 2 4 9 10 0
 Type: concave

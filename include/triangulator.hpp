@@ -8,9 +8,11 @@
 #include <map>
 
 #define epsilon 1e-3
+#define EXTENDED 2
+#define NOT_EXTENDED 3
 
 struct Vertex{
-    float data[3];
+    float data[4];
     bool operator==(const Vertex& v) const;
     Vertex operator+(const Vertex& v) const;
     Vertex operator-(const Vertex& v) const;
@@ -18,6 +20,21 @@ struct Vertex{
     Vertex& operator-=(const Vertex& v);
     Vertex operator*(float k) const;
     Vertex& operator*=(float k);
+    Vertex mult(float k) const{
+        Vertex result;
+        result.data[0] *= k;
+        result.data[1] *= k;
+        return result;
+    }
+    Vertex add(const Vertex& v) const{
+        Vertex result;
+        result.data[0] += v.data[0];
+        result.data[1] += v.data[1];
+        return result;
+    }
+    Vertex subtract(const Vertex& v) const{
+        return add(v.mult(-1));
+    }
 
     friend std::ostream& operator<<(std::ostream& out, const Vertex& v);
     void print() const;
@@ -106,6 +123,7 @@ Side tell_binary_side(const line_t&, const line_t& line);
 ShapeType tell_shape(const std::vector<vertex_t>& vertices);
 ShapeType tell_shape(const line_t& line, const std::vector<vertex_t>& vertices);
 vertex_t tell_intersection(const coef_t& coefs1, const coef_t& coefs2);
+vertex_t tell_intersection2(const line_t& line1, const line_t& line2);
 bool intersects(const line_t& l1, const line_t& l2);
 
 static std::vector<unsigned> __indices;

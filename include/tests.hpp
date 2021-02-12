@@ -1,6 +1,6 @@
 #pragma once
 
-#include "triangluator.hpp"
+#include "triangulator.hpp"
 
 #include <cppunit/TestCase.h>
 #include <cppunit/TestFixture.h>

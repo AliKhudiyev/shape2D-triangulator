@@ -73,7 +73,7 @@ def triangluate_shape():
         lines = f.readlines()
         indices = lines[-2][10:-1].split(' ')
         type_ = lines[-1][5:-1]
-
+        
         for i in range(0, len(indices), 3):
             triangles.append([points[int(indices[i])], 
                               points[int(indices[i+1])], 

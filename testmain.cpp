@@ -1,4 +1,4 @@
-#include "triangluator.hpp"
+#include "triangulator.hpp"
 #include "tests.hpp"
 
 #include <iostream>

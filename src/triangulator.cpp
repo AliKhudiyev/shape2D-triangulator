@@ -1,4 +1,4 @@
-#include "triangluator.hpp"
+#include "triangulator.hpp"
 
 #include <iostream>
 #include <unistd.h>
@@ -284,6 +284,72 @@ vertex_t tell_intersection(const coef_t& coefs1, const coef_t& coefs2){
     return point;
 }
 
+vertex_t tell_intersection2(const line_t& line1, const line_t& line2){
+    coef_t coefs1 = tell_coefs(line1);
+    coef_t coefs2 = tell_coefs(line2);
+    vertex_t point = tell_intersection(coefs1, coefs2);
+
+    if((line1.v[0].data[3] == EXTENDED && line1.v[0].data[3] == EXTENDED &&
+       line2.v[0].data[3] == EXTENDED && line2.v[0].data[3] == EXTENDED) ||
+       is_equal(point.data[2], -1))
+    {
+        printf(" dbg all extended or no intersection point returned!\n");
+        return point;
+    }
+    
+    vertex_t dv, dir;
+    double k;
+
+    if(line1.v[0].data[3] != EXTENDED){
+        dv = point.subtract(line1.v[0]);
+        dir = line1.v[1].subtract(line1.v[0]);
+        k = dv.data[0] / dir.data[0];
+
+        if(k >= 0){
+            point.data[2] = -1;
+            std::cout << " dbg returned with " << point << '\n';
+            return point;
+        }
+    }
+    if(line1.v[1].data[3] != EXTENDED){
+        dv = point.subtract(line1.v[1]);
+        dir = line1.v[0].subtract(line1.v[1]);
+        k = dv.data[0] / dir.data[0];
+
+        if(k >= 0){
+            point.data[2] = -1;
+            std::cout << " dbg returned with " << point << '\n';
+            return point;
+        }
+    }
+    if(line2.v[0].data[3] != EXTENDED){
+        dv = point.subtract(line2.v[0]);
+        dir = line2.v[1].subtract(line2.v[0]);
+        k = dv.data[0] / dir.data[0];
+
+        if(k >= 0){
+            point.data[2] = -1;
+            std::cout << " dbg returned with " << point << '\n';
+            return point;
+        }
+    }
+    if(line2.v[1].data[3] != EXTENDED){
+        dv = point.subtract(line2.v[1]);
+        dir = line2.v[0].subtract(line2.v[1]);
+        k = dv.data[0] / dir.data[0];
+
+        if(k >= 0){
+            point.data[2] = -1;
+            std::cout << " dbg returned with " << point << '\n';
+            return point;
+        }
+    }
+    point.data[2] = 1;
+    std::cout << " dbg returned normal intersection point :)\n";
+
+    return point;
+}
+
 bool intersects(const line_t& l1, const line_t& l2){
     auto coefs1 = tell_coefs(l1);
     auto coefs2 = tell_coefs(l2);
@@ -332,9 +398,9 @@ bool is_separable(unsigned index1, unsigned index2, const std::vector<vertex_t>&
         return false;
     }
 
-    auto v1 = vertices[index1];
-    auto v2 = vertices[index2];
-    auto line = line_t{v1, v2};
+    vertex_t v1 = vertices[index1];
+    vertex_t v2 = vertices[index2];
+    line_t line = line_t{v1, v2};
     unsigned count = vertices.size();
     std::vector<line_t> lines;
 
@@ -351,6 +417,68 @@ bool is_separable(unsigned index1, unsigned index2, const std::vector<vertex_t>&
         return false;
     }
 
+    line_t lines1[2], lines2[2];
+    Side sides1[2], sides2[2];
+    line.v[0].data[3] = NOT_EXTENDED;
+    line.v[1].data[3] = NOT_EXTENDED;
+
+    if(!index1){
+        lines1[0] = line_t{ vertices[index1], vertices[index1+1] };
+        lines1[1] = line_t{ vertices[index1], vertices[count-1] };
+    } else{
+        lines1[0] = line_t{ vertices[index1], vertices[(index1+1)%count] };
+        lines1[1] = line_t{ vertices[index1], vertices[index1-1] };
+    }
+    if(!index2){
+        lines2[0] = line_t{ vertices[index2], vertices[index2+1] };
+        lines2[1] = line_t{ vertices[index2], vertices[count-1] };
+    } else{
+        lines2[0] = line_t{ vertices[index2], vertices[(index2+1)%count] };
+        lines2[1] = line_t{ vertices[index2], vertices[index2-1] };
+    }
+
+    sides1[0] = tell_binary_side(lines1[0], line);
+    sides1[1] = tell_binary_side(lines1[1], line);
+    sides2[0] = tell_binary_side(lines2[0], line);
+    sides2[1] = tell_binary_side(lines2[1], line);
+
+    printf("\t\n= = = = = = = = START = = = = = = = = =\n");
+
+    bool is_valid = true;
+    if(sides1[0] == sides1[1]){
+        std::cout << "Same sides[1]: " << lines1[0] << ", " << lines1[1] << " | " << line << '\n';
+        std::cout << "Expandable from " << line.v[0] << '\n';
+        is_valid = false;
+        line.v[0].data[3] = EXTENDED;
+        for(size_t i=0; i<lines.size(); ++i){
+            vertex_t point = tell_intersection2(lines[i], line);
+            if(is_equal(point.data[2], 1)){ 
+                is_valid = true;
+                break;
+            }
+        }
+        if(!is_valid) return false;
+    }
+    std::cout << "current status: " << is_valid << '\n';
+    if(sides2[0] == sides2[1]){
+        std::cout << "Same sides[2]: " << lines2[0] << ", " << lines2[1] << " | " << line << '\n';
+        std::cout << "Expandable from " << line.v[1] << '\n';
+        is_valid = false;
+        line.v[1].data[3] = EXTENDED;
+        for(size_t i=0; i<lines.size(); ++i){
+            std::cout << " dbg intersection with " << lines[i] << '\n';
+            vertex_t point = tell_intersection2(lines[i], line);
+            if(is_equal(point.data[2], 1)){
+                is_valid = true;
+                printf(" ...Hooray!\n");
+                break;
+            }
+        }
+        if(!is_valid) return false;
+    }
+    std::cout << "current status(2): " << is_valid << '\n';
+
+    printf("\t= = = = = = = = END = = = = = = = = =\n");
     return true;
 }
 
