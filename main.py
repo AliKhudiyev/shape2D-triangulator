@@ -60,7 +60,7 @@ def triangluate_shape():
     global points, triangles
     global type_label
 
-    command = 'build/main -p shape.csv > triangles.txt'
+    command = 'build/triangulate shape.csv > triangles.txt'
 
     with open('shape.csv', 'w') as f:
         for point in points:
@@ -70,16 +70,17 @@ def triangluate_shape():
     os.system(command)
 
     with open('triangles.txt', 'r') as f:
-        lines = f.readlines()
-        indices = lines[-2][10:-1].split(' ')
-        type_ = lines[-1][5:-1]
-        
+        line = f.readline()
+        # print(line[:-1])
+        indices = line[:-1].split(' ')[:-1]
+        # type_ = lines[-1][5:-1]
+        # print(indices)
         for i in range(0, len(indices), 3):
             triangles.append([points[int(indices[i])], 
                               points[int(indices[i+1])], 
                               points[int(indices[i+2])]])
         
-        type_label.config(text=type_)
+        # type_label.config(text=type_)
     f.close()
 
 def generate_shape():
